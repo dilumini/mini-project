@@ -1,0 +1,101 @@
+projection ManageSales;
+component MPRORD;
+layer Core;
+description "Put some useful description here ...";
+category Users;
+
+--------------------------------- FRAGMENTS ---------------------------------
+
+----------------------------- MAIN ENTRY POINTS -----------------------------
+entityset MprCustomerDetailsEntitySet for MprCustomer;
+entityset MprCustomerOrderEntitySet for MprCustomerOrder;
+entityset MprCustomerOrderLineEntitySet for MprCustomerOrderLine;
+entityset MprCustomerOrderNoLineEntitySet for MprCustomerNoOrderLine;
+
+
+
+
+
+------------------------------ ENTITY DETAILS -------------------------------
+@Override
+entity MprCustomerOrder {
+   reference MprCustomerRef(CustomerId) to MprCustomer(CustomerId);
+   reference MprCustomerOrderRef(MprCustomerOrderId) to MprCustomerOrderLine(MprCustomerOrderId);
+   reference MprCustomerOrderNoLineRef(MprCustomerOrderId) to MprCustomerNoOrderLine(MprCustomerOrderId);
+   array CustomerOrderLines(MprCustomerOrderId) to MprCustomerOrderLine(MprCustomerOrderId);
+   array CustomerNoOrderLines(MprCustomerOrderId) to MprCustomerNoOrderLine(MprCustomerOrderId);
+}
+
+
+@Override
+entity MprCustomerOrderLine {
+   @DynamicComponentDependency MPRINV
+   reference PartRef(PartId) to MprInventoryPart(PartId);
+
+
+}
+
+
+
+
+
+------------------------------- ENUMERATIONS --------------------------------
+
+
+---------------------------------- QUERIES ----------------------------------
+
+
+
+
+
+
+---------------------------------- ACTIONS ----------------------------------
+
+
+--------------------------------- FUNCTIONS ---------------------------------
+
+function Calculate_Total_Amount Number {
+
+   parameter MprCustomerOrderId Number;
+   parameter CustomerOrderLineId Number;
+   parameter OrderLineQuantity Number;
+   parameter OrderLinePrice Number;
+
+}
+
+function Calculate_No_Line_Total_Amount Number {
+
+   parameter MprCustomerOrderId Number;
+   parameter CustomerNoOrderLineId Number;
+   parameter NoLineQuantity Number;
+   parameter NoLinePrice Number;
+
+}
+
+function GetPartDescription Text {
+   parameter PartId Number;
+
+}
+
+function GetPartPrice Number {
+   parameter PartId Number;
+
+}
+function Seq_Co_Id Number {
+   parameter MprCustomerOrderId Number;
+
+
+}
+
+
+
+-------------------------------- STRUCTURES ---------------------------------
+
+
+--------------------------------- VIRTUALS ----------------------------------
+
+
+--------------------------------- SUMMARIES ---------------------------------
+
+
+-------------------------------- SINGLETONS ---------------------------------

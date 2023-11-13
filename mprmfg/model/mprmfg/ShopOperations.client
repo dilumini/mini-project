@@ -1,0 +1,87 @@
+client ShopOperations;
+component MPRMFG;
+layer Core;
+projection ShopOperations;
+
+description "Put some useful description here ...";
+
+--------------------------------- FRAGMENTS ---------------------------------
+
+----------------------------- NAVIGATOR ENTRIES -----------------------------
+navigator {
+
+   entry ManageProductStructureNavEntry parent ShopOperationsNavigatorRoot.ManageShopOperationsNavEntry at index 21 {
+      label = "Product Structure";
+      page ProductStructurePage;
+   }
+}
+
+-------------------------------- MAIN PAGES ---------------------------------
+page ProductStructurePage using  MprProductStructureSet {
+   selector MprProductStructureSelector;
+   group ProductStructerHeder bind MprProductStructureSelector;
+   list ProductStructureList(StructureLineArray);
+
+
+}
+
+
+
+--------------------------------- COMMANDS ----------------------------------
+
+
+--------------------------------- SELECTORS ---------------------------------
+
+
+---------------------------------- GROUPS -----------------------------------
+group ProductStructerHeder for MprProductStructure {
+
+   field StructureId;
+   field PartId;
+   @DynamicComponentDependency MPRINV
+   field PartDetailsRef.PartDescription;
+   @DynamicComponentDependency MPRINV
+   field PartDetailsRef.PartType;
+
+}
+
+----------------------------------- LISTS -----------------------------------
+list ProductStructureList for MprProductStructureLine {
+
+   field StructureId;
+   field StructureLineId;
+   field PartId;
+   field LineQty;
+
+
+
+
+}
+
+
+
+---------------------------------- DIALOGS ----------------------------------
+
+
+-------------------------------- SINGLETONS ---------------------------------
+
+
+---------------------------------- CHARTS -----------------------------------
+
+
+--------------------------------- CALENDERS ---------------------------------
+
+
+---------------------------------- SHEETS -----------------------------------
+
+
+----------------------------- STATE INDICATORS ------------------------------
+
+
+----------------------------------- TREES -----------------------------------
+
+
+---------------------------------- PLUGINS ----------------------------------
+
+
+------------------------------- IMAGE VIEWERS -------------------------------

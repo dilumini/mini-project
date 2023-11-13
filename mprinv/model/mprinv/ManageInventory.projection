@@ -1,0 +1,64 @@
+projection ManageInventory;
+component MPRINV;
+layer Core;
+description "Put some useful description here ...";
+category Users;
+
+--------------------------------- FRAGMENTS ---------------------------------
+
+----------------------------- MAIN ENTRY POINTS -----------------------------
+entityset MprInventoryPartSet for MprInventoryPart;
+entityset MprInventoryLocationSet for MprInventoryLocation;
+entityset MprQuantitySet for MprPartLocationQuantity;
+
+
+
+------------------------------ ENTITY DETAILS -------------------------------
+
+
+------------------------------- ENUMERATIONS --------------------------------
+
+
+---------------------------------- QUERIES ----------------------------------
+
+
+---------------------------------- ACTIONS ----------------------------------
+action MovingQuantity {
+   initialcheck none;
+    --for automatically update the entity
+   ludependencies = MprPartLocationQuantity;
+   
+   parameter LocationId Number;
+   parameter PartId Number;
+   parameter UpdatedQuantity Number;
+
+}
+
+
+
+--------------------------------- FUNCTIONS ---------------------------------
+
+
+-------------------------------- STRUCTURES ---------------------------------
+structure DirectInventoryStructure {
+   attribute PartId Number;
+   attribute LocationId Number;
+   attribute PartDescription Text;
+   attribute LocationDescription Text;
+   attribute Quantity Number;
+   attribute MovingQuantity Number;
+
+
+   reference PartDescRef(PartId) to MprInventoryPart(PartId);
+   reference LocationDescRef(LocationId) to MprInventoryLocation(LocationId);
+
+}
+
+
+--------------------------------- VIRTUALS ----------------------------------
+
+
+--------------------------------- SUMMARIES ---------------------------------
+
+
+-------------------------------- SINGLETONS ---------------------------------

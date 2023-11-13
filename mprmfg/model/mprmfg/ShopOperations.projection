@@ -1,0 +1,47 @@
+projection ShopOperations;
+component MPRMFG;
+layer Core;
+description "Put some useful description here ...";
+category Users;
+
+--------------------------------- FRAGMENTS ---------------------------------
+
+----------------------------- MAIN ENTRY POINTS -----------------------------
+entityset MprProductStructureSet for MprProductStructure;
+entityset MprProductStructureLineSet for MprProductStructureLine;
+
+
+------------------------------ ENTITY DETAILS -------------------------------
+@Override
+entity MprProductStructure {
+   @DynamicComponentDependency MPRINV
+   reference PartDetailsRef(PartId) to MprInventoryPart(PartId);
+   reference ProductStructureLineRef(StructureId) to MprProductStructureLine(StructureId);
+   array StructureLineArray(StructureId) to MprProductStructureLine(StructureId);
+
+
+}
+
+
+------------------------------- ENUMERATIONS --------------------------------
+
+
+---------------------------------- QUERIES ----------------------------------
+
+
+---------------------------------- ACTIONS ----------------------------------
+
+
+--------------------------------- FUNCTIONS ---------------------------------
+
+
+-------------------------------- STRUCTURES ---------------------------------
+
+
+--------------------------------- VIRTUALS ----------------------------------
+
+
+--------------------------------- SUMMARIES ---------------------------------
+
+
+-------------------------------- SINGLETONS ---------------------------------

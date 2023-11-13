@@ -1,0 +1,202 @@
+client ManageInventory;
+component MPRINV;
+layer Core;
+projection ManageInventory;
+description "Put some useful description here ...";
+
+--------------------------------- NAVIGATOR ---------------------------------
+
+navigator {
+
+   entry ManagePartInventoryNavEntry parent MprinvNavigatorRoot.ManageMprInventoryNavEntry at index 10 {
+      label = "Inventory Parts";
+      page MprInventoryPartPage;
+
+   }
+   entry ManageLocationInventoryNavEntry parent MprinvNavigatorRoot.ManageMprInventoryNavEntry at index 15 {
+      label = "Inventory Locations";
+      page MprInventoryLocationPage;
+
+   }
+   entry ManageQuantityInventoryNavEntry parent MprinvNavigatorRoot.ManageMprInventoryNavEntry at index 20 {
+      label = "Inventory Quantities";
+      page MprInventoryQuantityPage;
+
+   }
+
+
+
+}
+
+--------------------------------- FRAGMENTS ---------------------------------
+
+----------------------------- NAVIGATOR ENTRIES -----------------------------
+
+-------------------------------- MAIN PAGES ---------------------------------
+page MprInventoryPartPage using MprInventoryPartSet {
+   label = "Inventory Parts List";
+
+   list MprInventoryPartList;
+
+}
+page MprInventoryLocationPage using MprInventoryLocationSet {
+   label = "Inventory Locations List";
+   list MprInventoryLocationList;
+
+}
+page MprInventoryQuantityPage using MprQuantitySet {
+   label = "Inventory Quantity List";
+   list MprInventoryQuantityList;
+
+   command DirectInventoryReceiptCommand;
+}
+
+
+
+--------------------------------- COMMANDS ----------------------------------
+
+
+command DirectInventoryReceiptCommand for MprPartLocationQuantity {
+   label = "Inventory receipt";
+
+
+   mode = SingleRecord;
+
+   execute {
+      dialog DirectInventoryReceipts(PartId, LocationId, Quantity);
+   }
+}
+
+command  QuantityCommand for DirectInventoryStructure {
+   label = "Increace Quantity";
+
+   execute {
+      if [MovingQuantity < 0] {
+         set MovingQuantity = 0;
+         error("The Increasing Quantity is less than 0");
+         exit;
+      }
+      else {
+         call MovingQuantity(LocationId, PartId, MovingQuantity);
+      }
+   }
+
+}
+
+
+
+--------------------------------- SELECTORS ---------------------------------
+
+
+---------------------------------- GROUPS -----------------------------------
+group DirectInventoryReceiptGroup for DirectInventoryStructure {
+   label = "Direct Inventory Receipt Group";
+
+   static PartId {
+      label = "Part Id";
+   }
+
+   static LocationId {
+      label = "Location Id";
+   }
+
+   static Quantity {
+      label = " Available Quantity";
+   }
+
+   static PartDescRef.PartDescription {
+      label = "Part Description";
+   }
+
+   static LocationDescRef.LocationDescription {
+      label = "Location Description";
+   }
+   field MovingQuantity {
+      label = " Increasing Quantity";
+
+      validate command {
+         execute {
+            if [MovingQuantity < 0] {
+               set MovingQuantity = 0;
+               error("The Source Quantity is less than 0");
+            }
+         }
+
+      }
+
+   }
+
+
+}
+
+
+
+----------------------------------- LISTS -----------------------------------
+list MprInventoryPartList for MprInventoryPart {
+   label = "Inventory Parts List";
+   field PartId;
+   field PartDescription;
+   field PartType;
+   field PartPrice;
+}
+
+list MprInventoryLocationList for MprInventoryLocation {
+   label = "Inventory Locations List";
+
+   field LocationId;
+   field LocationDescription;
+
+}
+
+list MprInventoryQuantityList for MprPartLocationQuantity {
+   label = "Inventory Quantities";
+   crudactions {
+      edit {
+         enabled = [false];
+      }
+   }
+
+   field PartId;
+   field LocationId;
+   field Quantity;
+
+}
+
+
+
+
+---------------------------------- DIALOGS ----------------------------------
+dialog DirectInventoryReceipts for DirectInventoryStructure {
+   label = "Direct Inventory Receipt";
+   input(PartId, LocationId, Quantity);
+
+   group DirectInventoryReceiptGroup;
+
+   command QuantityCommand;
+
+
+}
+
+
+-------------------------------- SINGLETONS ---------------------------------
+
+
+---------------------------------- CHARTS -----------------------------------
+
+
+--------------------------------- CALENDERS ---------------------------------
+
+
+---------------------------------- SHEETS -----------------------------------
+
+
+----------------------------- STATE INDICATORS ------------------------------
+
+
+----------------------------------- TREES -----------------------------------
+
+
+---------------------------------- PLUGINS ----------------------------------
+
+
+------------------------------- IMAGE VIEWERS -------------------------------

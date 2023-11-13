@@ -1,0 +1,309 @@
+client ManageSales;
+component MPRORD;
+layer Core;
+description "Put some useful description here ...";
+
+--------------------------------- FRAGMENTS ---------------------------------
+
+----------------------------- NAVIGATOR ENTRIES -----------------------------
+navigator {
+
+   entry ManageCustomerDetailsNavEntry parent MprordNavigatorRoot.ManageMprSalesyNavEntry at index 15 {
+      label = "Customer Details";
+      page CustomerDetailsPage;
+
+   }
+
+   entry ManageCustomerOrderssNavEntry parent MprordNavigatorRoot.ManageMprSalesyNavEntry at index 20 {
+      label = "Customer Order Details";
+      page CustomerOrderDetailsPage;
+
+   }
+   entry ManageCustomerOrderLinesNavEntry parent MprordNavigatorRoot.ManageMprSalesyNavEntry at index 25 {
+      label = "Main Customer Order Details";
+      page CustomerOrdeLineDetailsPage;
+
+   }
+
+}
+
+-------------------------------- MAIN PAGES ---------------------------------
+page CustomerDetailsPage using MprCustomerDetailsEntitySet {
+   label = "Customer Details";
+   list CustomersList;
+
+}
+
+page CustomerOrderDetailsPage using MprCustomerOrderEntitySet {
+   label = "Customer Order Details";
+
+   list  CustomerOrderList;
+
+}
+
+page CustomerOrdeLineDetailsPage using MprCustomerOrderEntitySet {
+   label = "Customer Order ${MprCustomerOrderId} - ${MprCustomerRef.CustomerName}";
+   stateindicator MprCustomerOrderStateIndicator;
+   selector MprCustomerOrderSelector;
+   group CustomerOrderDetailsGroup bind MprCustomerOrderSelector;
+
+   tabs {
+
+      tab {
+
+         label = "Part Lines List";
+
+         list  PartLinesList(CustomerOrderLines);
+
+      }
+
+      tab {
+
+         label = "No Part Lines";
+
+         list  NoPartLineList(CustomerNoOrderLines);
+
+      }
+
+   }
+
+   commandgroup CustomerOrderStates {
+      command Release;
+      command Cancel;
+      command Close;
+   }
+}
+
+
+
+
+--------------------------------- COMMANDS ----------------------------------
+
+
+--------------------------------- SELECTORS ---------------------------------
+@DynamicComponentDependency MPRINV
+selector PartIdSelector for MprInventoryPart {
+
+   static PartId;
+   static PartDescription;
+}
+
+
+
+
+
+---------------------------------- GROUPS -----------------------------------
+group CustomerOrderDetailsGroup for MprCustomerOrder {
+
+   field MprCustomerOrderId {
+      label = "Order No:-";
+
+   }
+   field OrderDate;
+   field CustomerId;
+   field MprCustomerRef.CustomerName;
+   field MprCustomerRef.CustomerType {
+      label = "Internal Customer";
+   }
+   field MprCustomerRef.DeliveryAddress;
+
+}
+
+
+----------------------------------- LISTS -----------------------------------
+list CustomersList for MprCustomer {
+   label = "Customer Details List";
+   field CustomerId;
+   field CustomerName;
+   field CustomerType {
+      label = "Internal Customer";
+
+   }
+
+   field DeliveryAddress;
+
+}
+
+list CustomerOrderList for MprCustomerOrder {
+   label = "Customer Order List";
+   crudactions {
+      edit {
+         enabled = [false];
+      }
+      new {
+         enabled = [false];
+
+      }
+
+
+   }
+   field MprCustomerOrderId {
+      label = "Order Id";
+
+   }
+   field CustomerId;
+
+   field OrderDate {
+      label = "Order Date";
+
+   }
+
+
+
+
+
+}
+list NoPartLineList for MprCustomerNoOrderLine {
+   field MprCustomerOrderId {
+      label = "Order Id";
+   }
+   field CustomerNoOrderLineId
+      {
+      label = "Order Line Id";
+   }
+   field PartDescription;
+   field NoLinePrice {
+      label = "Price Per Part";
+   }
+   field NoLineQuantity {
+      label = "Quantity";
+
+      validate command {
+         execute {
+            if [NoLineQuantity < 0] {
+               set NoLineQuantity = 0;
+               error(" Quantity  should be greater  than 0");
+               exit;
+            }
+            call Calculate_No_Line_Total_Amount(MprCustomerOrderId, CustomerNoOrderLineId, NoLineQuantity, NoLinePrice) into NoLineSubTotal;
+
+         }
+
+      }
+   }
+
+   field NoLineSubTotal {
+      label = "Sub Total";
+
+   }
+   badge Objstate {
+      size = Large;
+      emphasis Complementary2 = [true];
+   }
+
+   commandgroup Noorderlines {
+      command Deliver;
+
+      command Cancel;
+
+
+   }
+}
+
+
+
+list PartLinesList for MprCustomerOrderLine {
+
+   crudactions {
+      edit {
+         enabled = [parent.Objstate != "Closed" and parent.Objstate != "Cancelled" and Objstate != "Delivered"];
+      }
+      new {
+         enabled = [parent.Objstate != "Closed" and parent.Objstate != "Cancelled" and Objstate != "Delivered"];
+      }
+      duplicate {
+         enabled = [parent.Objstate != "Closed" and parent.Objstate != "Cancelled" and Objstate != "Delivered"];
+      }
+
+   }
+
+   field MprCustomerOrderId {
+      label = "Order Id";
+   }
+   @DynamicComponentDependency MPRINV
+   lov PartRef with PartIdSelector {
+      validate command {
+         execute {
+            call GetPartDescription(PartRef.PartId) into PartDescription;
+            call GetPartPrice(PartRef.PartId) into OrderLinePrice;
+            call Seq_Co_Id(MprCustomerOrderId) into CustomerOrderLineId;
+         }
+      }
+   }
+   field CustomerOrderLineId {
+      label = "Order Line Id";
+
+   }
+
+
+   field PartDescription;
+
+   field OrderLinePrice {
+      label = "Price per Part";
+   }
+   field OrderLineQuantity {
+      label = "Quantity";
+
+      validate command {
+         execute {
+            if [OrderLineQuantity < 0] {
+               set OrderLineQuantity = 0;
+               error(" Quantity  should be greater  than 0");
+               exit;
+            }
+            call Calculate_Total_Amount(MprCustomerOrderId, CustomerOrderLineId, OrderLineQuantity, OrderLinePrice) into OrderLineSubTotal;
+
+         }
+
+      }
+
+   }
+
+
+   field OrderLineSubTotal {
+      label = "Sub Total";
+
+   }
+   badge Objstate {
+      size = Large;
+      emphasis Complementary2 = [true];
+   }
+   commandgroup Noorderlines {
+      command Deliver;
+
+      command Cancel;
+
+
+   }
+
+
+}
+
+
+
+
+---------------------------------- DIALOGS ----------------------------------
+
+
+-------------------------------- SINGLETONS ---------------------------------
+
+
+---------------------------------- CHARTS -----------------------------------
+
+
+--------------------------------- CALENDERS ---------------------------------
+
+
+---------------------------------- SHEETS -----------------------------------
+
+
+----------------------------- STATE INDICATORS ------------------------------
+
+
+----------------------------------- TREES -----------------------------------
+
+
+---------------------------------- PLUGINS ----------------------------------
+
+
+------------------------------- IMAGE VIEWERS -------------------------------

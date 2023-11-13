@@ -1,0 +1,25 @@
+-----------------------------------------------------------------------------
+--
+--  Logical unit: ManageInventory
+--  Component:    MPRINV
+--
+--  IFS Developer Studio Template Version 3.0
+--
+--  Date    Sign    History
+--  ------  ------  ---------------------------------------------------------
+-----------------------------------------------------------------------------
+
+layer Core;
+
+PROCEDURE Moving_Quantity___ (
+   location_id_ IN NUMBER,
+   part_id_ IN NUMBER,
+   updated_quantity_ IN NUMBER)
+IS
+BEGIN
+   Mpr_Part_Location_Quantity_API.Update_Quantity(location_id_, part_id_, updated_quantity_);
+   --UPDATE Mpr_Part_Location_Quantity_Tab
+--   SET Quantity = updated_quantity_
+--   WHERE Location_Id = location_id_ AND Part_Id =part_id_;
+	-- NO IMPLEMENTATION WRITTEN YET
+END Moving_Quantity___;

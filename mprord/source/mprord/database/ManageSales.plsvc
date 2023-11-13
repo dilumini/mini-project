@@ -1,0 +1,77 @@
+-----------------------------------------------------------------------------
+--
+--  Logical unit: ManageSales
+--  Component:    MPRORD
+--
+--  IFS Developer Studio Template Version 3.0
+--
+--  Date    Sign    History
+--  ------  ------  ---------------------------------------------------------
+-----------------------------------------------------------------------------
+
+layer Core;
+
+FUNCTION Calculate_Total_Amount___ (
+   mpr_customer_order_id_ IN NUMBER,
+   customer_order_line_id_ IN NUMBER,
+   order_line_quantity_ IN NUMBER,
+   order_line_price_ IN NUMBER) RETURN NUMBER
+IS
+   Tot_ NUMBER;
+BEGIN
+   Tot_ := Mpr_Customer_Order_Line_API.Calculate_Sub_Total_Price(mpr_customer_order_id_,customer_order_line_id_,order_line_quantity_,order_line_price_);
+   RETURN Tot_;
+   
+END Calculate_Total_Amount___;
+
+
+
+FUNCTION Get_Part_Description___ (
+   part_id_ IN NUMBER) RETURN VARCHAR2
+IS
+   desc_  VARCHAR2(500);
+BEGIN
+ desc_ :=  Mpr_Inventory_Part_API.Get_Part_Description(part_id_);
+   RETURN desc_;
+END Get_Part_Description___;
+
+
+
+
+
+
+
+FUNCTION Get_Part_Price___ (
+   part_id_ IN NUMBER) RETURN NUMBER
+IS
+   price_ NUMBER;
+  
+BEGIN
+	price_ := Mpr_Inventory_Part_API.Get_Part_Price(part_id_);
+   RETURN price_;
+END Get_Part_Price___;
+
+
+FUNCTION Calculate_No_Line_Total_Amount___ (
+   mpr_customer_order_id_ IN NUMBER,
+   customer_no_order_line_id_ IN NUMBER,
+   no_line_quantity_ IN NUMBER,
+   no_line_price_ IN NUMBER) RETURN NUMBER
+IS
+    Total_ NUMBER;
+BEGIN
+    Total_ := Mpr_Customer_Order_Line_API.Calculate_Sub_Total_Price(mpr_customer_order_id_,customer_no_order_line_id_,no_line_quantity_,no_line_price_);
+   RETURN Total_;
+	-- NO IMPLEMENTATION WRITTEN YET
+END Calculate_No_Line_Total_Amount___;
+
+
+FUNCTION Seq_Co_Id___ (
+   mpr_customer_order_id_ IN NUMBER) RETURN NUMBER
+IS
+   Order_Id_ NUMBER;
+BEGIN
+   Order_Id_:= Mpr_Customer_Order_Line_API.Seq_Co_Id(mpr_customer_order_id_);
+   RETURN Order_Id_ ;
+	-- NO IMPLEMENTATION WRITTEN YET
+END Seq_Co_Id___;
